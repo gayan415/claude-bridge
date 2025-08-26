@@ -10,21 +10,8 @@ This is an **MCP (Model Context Protocol) server** that bridges Claude Desktop w
 
 **🚀 NEW: Hybrid Room Monitoring System** - Intelligently monitors only your most relevant rooms instead of scanning 100+ rooms, delivering 95% API reduction and massive productivity gains.
 
-### The Problem
-You're working in Claude, but you need to constantly switch to WebEx to:
-- Check messages across 100+ spaces
-- Find urgent messages
-- Reply to important communications
-- Then switch back to Claude
-
-### The Solution
-With this MCP server, you stay in Claude and simply say things like:
-- "Check my WebEx messages"
-- "Show me urgent messages only"
-- "Reply to John saying I'll review this shortly"
-- "Show me recent messages in the SRE room"
-
-Claude uses this MCP server to connect to WebEx, analyze messages, and send replies - all without leaving Claude Desktop.
+### Why Use This?
+Manage WebEx Teams directly from Claude Desktop without switching applications. Simply ask Claude to check messages, send replies, or analyze urgent communications - all while staying in your Claude workflow.
 
 ## Quick Start
 
@@ -93,115 +80,40 @@ Once configured in Claude Desktop, chat naturally with Claude:
 - **🏠 Room visibility**: "Show me my WebEx rooms info" → Complete room access overview and statistics
 - **🔧 Check access**: "Diagnose my WebEx personal token" → Essential for troubleshooting access issues
 
-### New Priority-First Response Format
+### Priority-First Messages
+Urgent messages (containing keywords like `urgent`, `critical`, `production down`) are shown first, followed by room summaries organized by topic.
 
-When you say "Check my WebEx messages", you now get:
+## Available Tools
 
-1. **🚨 URGENT MESSAGES** (if any) - Messages with `URGENCY_KEYWORDS` that need immediate attention
-2. **📋 ROOM SUMMARIES** - Non-urgent messages organized by room with topics
-3. **📊 GUIDANCE** - Clear next steps on what to handle first
-
-## MCP Tools Available
-
-The server provides these tools to Claude:
-
-1. **`webex_get_message_summaries`** - Get summaries of all messages from all rooms
-   - Shows sender names, message counts, and detected topics
-   - Returns room IDs for easy replies
-   
-2. **`webex_get_urgent_messages`** - Fetch only urgent/priority messages
-   - Filters based on keywords and sender priority
-   
-3. **`webex_send_reply`** - Send a message to any room
-   - Supports direct messages and group spaces
-   
-4. **`webex_get_room_context`** - Get recent conversation history
-   - Retrieves specified number of messages from a room
-   
+### Core Message Management
+1. **`webex_get_message_summaries`** - Priority-first message overview
+2. **`webex_get_urgent_messages`** - Urgent messages only
+3. **`webex_send_reply`** - Send messages to any room
+4. **`webex_get_room_context`** - Get conversation history
 5. **`webex_mark_handled`** - Mark messages as handled
-   - Prevents duplicate responses
 
-6. **`webex_get_rooms_info`** - Get comprehensive room visibility and statistics
-   - Shows which rooms are accessible vs inaccessible
-   - Displays room metadata (member counts, activity, types)
-   - Identifies rooms with urgent content using `URGENCY_KEYWORDS`
-   - Provides insights on most active rooms
+### Room & Diagnostics
+6. **`webex_get_rooms_info`** - Room access and statistics
+7. **`webex_diagnose_personal_token`** - Token troubleshooting
 
-7. **`webex_diagnose_personal_token`** - **🔧 Essential for troubleshooting access issues**
-   - Diagnoses personal token configuration and permissions
-   - Provides step-by-step fix instructions for access issues
-   - Tests personal token validity and expiration
-   - Guides through access troubleshooting
+### Hybrid Room Monitoring
+8. **`webex_get_room_monitoring_stats`** - Room filtering insights
+9. **`webex_refresh_room_filter`** - Refresh room cache
 
-## 🚀 **HYBRID ROOM MONITORING TOOLS (NEW)**
-
-8. **`webex_get_room_monitoring_stats`** - **📊 Room Filtering Insights**
-   - Shows which rooms are being monitored and why
-   - Displays filtering configuration and statistics
-   - Lists top monitored rooms with scores
-   - Shows excluded rooms and reasons
-
-9. **`webex_refresh_room_filter`** - **🔄 Manual Cache Refresh**
-   - Forces refresh of room filtering cache
-   - Picks up new rooms or configuration changes
-   - Useful after updating room patterns
-
-## 🚀 **ORGANIZATION POLICY BYPASS TOOLS**
-
-**NEW**: Advanced tools to bypass enterprise WebEx restrictions
-
-8. **`webex_detect_best_mode`** - **🔍 AUTO-FIX: Bypass Detection**
-   - Auto-detects best method to bypass organization restrictions
-   - Tests Bot, Integration, and Webhook access modes
-   - Provides confidence ratings and next-step recommendations
-
-9. **`webex_setup_integration`** - **🔧 ORGANIZATION FIX: OAuth Integration**
-   - Setup WebEx Integration (OAuth) to bypass bot message reading restrictions
-   - Uses USER permissions instead of bot permissions
-   - Generates OAuth authorization URLs for user consent
-
-10. **`webex_complete_oauth`** - **✅ Complete OAuth Authorization**
-    - Completes WebEx Integration OAuth flow with authorization code
-    - Exchanges code for access/refresh tokens
-    - Enables message reading via user authorization
-
-11. **`webex_setup_webhooks`** - **⚡ REAL-TIME FIX: Webhook Notifications**
-    - Setup real-time WebEx webhooks for message notifications
-    - Bypasses polling restrictions with push notifications
-    - Configures webhook endpoints for immediate message delivery
-
-12. **`webex_get_messages_hybrid`** - **🎯 PRIMARY BYPASS TOOL**
-    - Get WebEx messages using best available method (AUTO mode)
-    - Automatically detects and uses: Integration → Webhook → Bot
-    - **Bypasses organization restrictions automatically**
-    - Supports manual mode selection (BOT/INTEGRATION/WEBHOOK/HYBRID)
 
 ## Configuration Options
 
 ### Required
 - `WEBEX_PERSONAL_TOKEN` - Your WebEx personal access token
 
-### Room Filtering Configuration (Hybrid System) 🚀
-The hybrid room monitoring system intelligently filters which rooms to monitor, reducing API calls by 95%.
+### Hybrid Room Monitoring
+Intelligently monitors only relevant rooms (95% API reduction):
 
-#### Tier 1: Priority Rooms (Always Monitored)
-- `WEBEX_PRIORITY_ROOMS` - Comma-separated list of room names that are always monitored
-  - Example: `"SRE Alerts,Platform Team,Critical Issues"`
-
-#### Tier 2: Pattern-Based Discovery
-- `WEBEX_INCLUDE_PATTERNS` - Wildcard patterns for room names to include
-  - Example: `"*Alert*,*Critical*,*Incident*,*Emergency*,*P1*,*Sev1*"`
-- `WEBEX_EXCLUDE_PATTERNS` - Wildcard patterns for room names to exclude
-  - Example: `"*Social*,*Random*,*Fun*,*Coffee*,*Lunch*,*Birthday*"`
-
-#### Tier 3: Activity-Based Intelligence
-- `WEBEX_MIN_ACTIVITY_MESSAGES` - Minimum messages in last N days (default: 5)
-- `WEBEX_MIN_ACTIVITY_DAYS` - Look-back period for activity (default: 7)
-- `WEBEX_SKIP_DIRECT_MESSAGES` - Skip DM monitoring (default: true)
-
-#### Tier 4: Performance Limits
-- `WEBEX_MAX_MONITORED_ROOMS` - Maximum rooms to monitor (default: 25)
-- `WEBEX_CACHE_ROOM_LIST_MINUTES` - Cache duration for room filtering (default: 30)
+- `WEBEX_PRIORITY_ROOMS` - Always monitor these rooms: `"SRE Alerts,Platform Team"`
+- `WEBEX_INCLUDE_PATTERNS` - Include patterns: `"*Alert*,*Critical*,*Incident*"`
+- `WEBEX_EXCLUDE_PATTERNS` - Exclude patterns: `"*Social*,*Random*,*Fun*"`
+- `WEBEX_MAX_MONITORED_ROOMS` - Room limit (default: 25)
+- `WEBEX_CACHE_ROOM_LIST_MINUTES` - Cache duration (default: 30)
 
 ### Urgency Detection
 - `URGENCY_KEYWORDS` - Comma-separated keywords that indicate urgency
@@ -209,19 +121,8 @@ The hybrid room monitoring system intelligently filters which rooms to monitor, 
 - `HIGH_PRIORITY_SENDERS` - Email addresses of important people
   - Example: `manager@company.com,oncall@company.com`
 
-## How Urgency Detection Works
-
-The system uses a **priority-first architecture** where `URGENCY_KEYWORDS` get absolute priority:
-
-### Priority Levels:
-1. **🚨 URGENT (Hard Filter)**: Messages containing any `URGENCY_KEYWORDS` are **immediately flagged as urgent**
-   - Keywords: `urgent`, `asap`, `critical`, `production`, `down`, `incident`, `emergency`, `help`, `broken`, `failed`, `error`, `outage`, `sev1`, `p1`
-   - **No scoring** - if keywords are found, message is urgent, period
-2. **⚡ HIGH PRIORITY**: Messages from `HIGH_PRIORITY_SENDERS` 
-3. **📢 OFF-HOURS MENTIONS**: Direct mentions during nights/weekends
-
-### Critical Emergency Detection:
-Messages with `production`, `down`, `outage`, `sev1`, `p1`, `critical`, `emergency` are flagged as `requiresImmediate: true`
+## Urgency Detection
+Messages containing `URGENCY_KEYWORDS` (`urgent`, `critical`, `production down`, `incident`, `emergency`) are immediately flagged as urgent. Messages from `HIGH_PRIORITY_SENDERS` also get priority treatment.
 
 ## Architecture Overview
 
@@ -232,15 +133,10 @@ Claude Desktop → MCP Protocol → WebEx MCP Server → WebEx API
 ```
 
 ### Components
-
-- **MCP Server** (`src/index.ts`): Handles communication with Claude Desktop
-- **WebEx Service** (`src/services/WebexService.ts`): Manages WebEx API calls
-- **Urgency Detector** (`src/services/UrgencyDetector.ts`): Analyzes message priority
-- **MCP Tools** (`src/utils/mcpTools.ts`): Defines tools available to Claude
-
-### Communication
-- **Claude ↔ MCP Server**: JSON-RPC over STDIO (local only)
-- **MCP Server ↔ WebEx**: HTTPS REST API with Bearer token auth
+- **MCP Server**: Handles Claude Desktop communication
+- **WebEx Service**: WebEx API integration with hybrid room filtering
+- **Urgency Detector**: Message priority analysis
+- **Room Filter Service**: Intelligent room monitoring
 
 ## Troubleshooting
 
@@ -294,27 +190,22 @@ npm test       # Run tests
 ```
 webex-bridge/
 ├── src/
-│   ├── index.ts              # MCP server entry point
+│   ├── index.ts                    # MCP server entry point
 │   ├── services/            
-│   │   ├── WebexService.ts   # WebEx API client
-│   │   └── UrgencyDetector.ts # Message prioritization
-│   ├── types/
-│   │   └── webex.ts          # TypeScript definitions
+│   │   ├── WebexService.ts         # WebEx API client with hybrid filtering
+│   │   ├── UrgencyDetector.ts      # Message prioritization
+│   │   └── RoomFilterService.ts    # Intelligent room monitoring
 │   └── utils/
-│       └── mcpTools.ts       # Tool definitions for Claude
-├── dist/                     # Compiled JavaScript
-├── .env                      # Your configuration
-└── package.json              # Dependencies
+│       └── mcpTools.ts             # Tool definitions for Claude
+├── dist/                           # Compiled JavaScript
+└── .env                            # Configuration
 ```
 
-## Key Design Decisions
-
-1. **MCP Protocol**: Native integration with Claude Desktop
-2. **No Webhooks**: Simplified local-only operation
-3. **No Auto-Response**: Claude handles all responses
-4. **STDIO Transport**: Secure local communication
-5. **Stateless Operation**: No message persistence
-6. **Pull-based Model**: Claude requests data when needed
+## Design Principles
+- **Local-only operation**: No external servers or webhooks
+- **Personal token authentication**: Uses your WebEx access
+- **Hybrid room monitoring**: 95% API reduction through intelligent filtering
+- **Priority-first messaging**: Urgent messages shown first
 
 ## See Also
 
