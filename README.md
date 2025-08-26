@@ -24,22 +24,9 @@ Intelligently manage your WebEx Teams messages directly from Claude.
 - **200+ hours saved per year**: Transform productivity with AI-powered filtering
 - [Full documentation →](./bridges/webex/README.md) | [Why you need this →](./bridges/webex/WHY_THIS_TOOL.md)
 
-### 🚧 Outlook Bridge (Coming Soon)
-- Read and compose emails
-- Manage calendar appointments
-- Search contacts
-- Set reminders
-
-### 🚧 Excel Bridge (Planned)
-- Read and update spreadsheets
-- Run formulas and analysis
-- Create charts and pivot tables
-- Export data in various formats
 
 
 ## Quick Start
-
-Each bridge is installed separately. Start with the bridge you need:
 
 ### Installing WebEx Bridge
 
@@ -56,7 +43,14 @@ Then configure Claude Desktop (`~/Library/Application Support/Claude/claude_desk
   "mcpServers": {
     "webex": {
       "command": "node",
-      "args": ["/path/to/claude-bridge/bridges/webex/dist/index.js"]
+      "args": ["/path/to/claude-bridge/bridges/webex/dist/index.js"],
+      "env": {
+        "WEBEX_PERSONAL_TOKEN": "your_personal_token_here",
+        "WEBEX_PRIORITY_ROOMS": "SRE Alerts,Platform Team,Critical Issues",
+        "WEBEX_INCLUDE_PATTERNS": "*Alert*,*Critical*,*Incident*",
+        "WEBEX_EXCLUDE_PATTERNS": "*Social*,*Random*,*Fun*",
+        "WEBEX_MAX_MONITORED_ROOMS": "25"
+      }
     }
   }
 }
@@ -69,44 +63,48 @@ See [WebEx Bridge README](./bridges/webex/README.md) for detailed setup.
 ```
 claude-bridge/
 ├── bridges/              # Individual MCP bridges
-│   ├── webex/           # WebEx Teams integration
-│   ├── outlook/         # Outlook integration (coming soon)
-│   ├── excel/           # Excel integration (planned)
-│   └── powerpoint/      # PowerPoint integration (planned)
-├── shared/              # Shared utilities across bridges
-└── docs/                # Additional documentation
+│   └── webex/           # WebEx Teams integration with hybrid room monitoring
+│       ├── src/         # TypeScript source code
+│       ├── dist/        # Compiled JavaScript
+│       ├── README.md    # WebEx bridge documentation
+│       └── WHY_THIS_TOOL.md  # Productivity impact analysis
+├── README.md            # Main project documentation  
+└── CLAUDE.md            # Technical documentation for Claude
 ```
 
 ## How It Works
 
-Each bridge:
+The WebEx Bridge:
 1. Runs as a local MCP server on your machine
-2. Connects to Claude Desktop via the MCP protocol
-3. Provides tools that Claude can use to interact with the target application
-4. Maintains security by keeping all credentials local
+2. Connects to Claude Desktop via the MCP protocol  
+3. Uses intelligent room filtering to monitor only relevant WebEx rooms
+4. Provides tools that Claude can use to interact with WebEx Teams
+5. Maintains security by keeping all credentials local
 
 ```
-Claude Desktop ←→ MCP Protocol ←→ Bridge Server ←→ Your Application (WebEx, Outlook, etc.)
+Claude Desktop ←→ MCP Protocol ←→ WebEx Bridge ←→ WebEx Teams API
+                                      ↓
+                            Hybrid Room Filtering (95% API reduction)
 ```
 
 ## Contributing
 
-Want to add a new bridge or improve existing ones? Contributions are welcome!
+Want to improve the WebEx bridge? Contributions are welcome!
 
-### Adding a New Bridge
+### Improvement Areas
 
-1. Create a new directory under `bridges/`
-2. Implement the MCP server following the WebEx bridge pattern
-3. Add documentation
-4. Submit a pull request
+1. **Room Filtering**: Enhance the hybrid room monitoring algorithm
+2. **Urgency Detection**: Improve keyword matching and priority logic  
+3. **Performance**: Optimize caching and API efficiency
+4. **Documentation**: Improve setup guides and troubleshooting
 
-### Bridge Development Guidelines
+### Development Guidelines
 
-- Each bridge should be self-contained
-- Use TypeScript for consistency
-- Follow the MCP protocol standards
+- Use TypeScript for all code
+- Follow the existing MCP protocol patterns  
 - Keep security credentials local
-- Document all available tools
+- Document all new features and tools
+- Maintain backward compatibility
 
 ## Security
 
