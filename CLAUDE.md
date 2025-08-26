@@ -26,12 +26,8 @@ This is a WebEx MCP (Model Context Protocol) server that enables Claude Desktop 
 - **Room Filter Service**: `src/services/RoomFilterService.ts` - **NEW** Hybrid room monitoring with 95% API reduction
 - **Urgency Detection**: `src/services/UrgencyDetector.ts` - Message prioritization logic
 - **Types**: `src/types/webex.ts` - TypeScript definitions
-- **MCP Tools**: `src/utils/mcpTools.ts` - All 14 tool definitions for Claude (includes room monitoring)
+- **MCP Tools**: `src/utils/mcpTools.ts` - All 9 core tool definitions for Claude
 
-### Organization Bypass Components (NEW)
-- **Hybrid Service**: `src/services/WebexHybridService.ts` - Multi-mode access coordinator
-- **Integration Service**: `src/services/WebexIntegration.ts` - OAuth Integration for bypassing bot restrictions
-- **Webhook Service**: `src/services/WebexWebhooks.ts` - Real-time webhook notifications
 
 ## Configuration
 
@@ -60,28 +56,12 @@ Transform productivity with intelligent room filtering - monitor only what matte
 - `WEBEX_MAX_MONITORED_ROOMS` - Maximum rooms to monitor (default: 25)
 - `WEBEX_CACHE_ROOM_LIST_MINUTES` - Room filtering cache duration (default: 30)
 
-### Basic Optional Configuration  
-- `URGENCY_KEYWORDS` - **Hard filter keywords** that immediately flag messages as urgent
+### Urgency Detection Configuration
+- `URGENCY_KEYWORDS` - Keywords that immediately flag messages as urgent
   - Default: `urgent,asap,critical,production,down,incident,emergency,help,broken,failed,error,outage,sev1,p1`
 - `HIGH_PRIORITY_SENDERS` - Email addresses of priority senders
 
-### Organization Bypass Configuration (Advanced)
-- `WEBEX_CLIENT_ID` - WebEx Integration Client ID (for OAuth bypass)
-- `WEBEX_CLIENT_SECRET` - WebEx Integration Client Secret (for OAuth bypass)
-- `WEBEX_REDIRECT_URI` - OAuth redirect URI (default: http://localhost:3000/callback)
-- `WEBEX_ACCESS_TOKEN` - OAuth access token (auto-generated after authorization)
-- `WEBEX_REFRESH_TOKEN` - OAuth refresh token (auto-generated after authorization)
-- `WEBEX_WEBHOOK_SECRET` - Secret for webhook verification (for real-time notifications)
-- `WEBEX_WEBHOOK_URL` - Public URL for webhook delivery (for real-time notifications)
-
 ## MCP Tools Available
-
-### **🚀 Organization Policy Bypass Tools (NEW)**
-8. `webex_detect_best_mode` - **AUTO-FIX**: Auto-detect best access method to bypass organization restrictions
-9. `webex_setup_integration` - **ORGANIZATION FIX**: Setup OAuth Integration to bypass bot restrictions  
-10. `webex_complete_oauth` - Complete WebEx Integration OAuth authorization flow
-11. `webex_setup_webhooks` - **REAL-TIME FIX**: Setup webhooks for real-time notifications (bypasses polling)
-12. `webex_get_messages_hybrid` - **PRIMARY TOOL**: Get messages using best available method (bypasses restrictions)
 
 ### **📊 Core Tools**
 1. `webex_get_message_summaries` - Priority-first tool: Shows urgent messages first, then summaries
@@ -93,8 +73,8 @@ Transform productivity with intelligent room filtering - monitor only what matte
 7. `webex_diagnose_personal_token` - Diagnostics: Essential for troubleshooting access issues
 
 ### **🎯 Hybrid Room Monitoring Tools (NEW)**
-8. `webex_get_room_monitoring_stats` - **INSIGHTS**: Room filtering configuration, statistics, and monitored rooms analysis
-9. `webex_refresh_room_filter` - **CACHE REFRESH**: Force refresh room filtering cache for new rooms/config changes
+8. `webex_get_room_monitoring_stats` - Room filtering insights and configuration
+9. `webex_refresh_room_filter` - Force refresh room filtering cache
 
 ## Key Features
 - **🚀 Hybrid Room Monitoring** - 95% API reduction by monitoring only relevant rooms (25 of 100+)
@@ -127,12 +107,9 @@ Transform productivity with intelligent room filtering - monitor only what matte
 - "Show me my WebEx rooms info" or "What rooms can I access?" - Uses `webex_get_rooms_info`
 - **"Diagnose my WebEx personal token"** or **"Check WebEx access"** - Uses `webex_diagnose_personal_token`
 
-### Organization Policy Bypass (NEW)
-- **"Detect best WebEx access mode"** - Uses `webex_detect_best_mode` (auto-identifies bypass method)
-- **"Setup WebEx Integration with client_id abc123"** - Uses `webex_setup_integration` (OAuth bypass setup)
-- **"Complete OAuth with authorization code xyz789"** - Uses `webex_complete_oauth` (finish OAuth flow)
-- **"Setup WebEx webhooks at https://myserver.com/webhook"** - Uses `webex_setup_webhooks` (real-time setup)
-- **"Get WebEx messages hybrid"** - Uses `webex_get_messages_hybrid` (PRIMARY bypass tool)
+### Room Monitoring & Statistics (NEW)
+- **"Show WebEx room monitoring stats"** - Uses `webex_get_room_monitoring_stats` (filtering insights)
+- **"Refresh WebEx room filter"** - Uses `webex_refresh_room_filter` (manual cache refresh)
 
 ## Priority-First Workflow
 The new `webex_get_message_summaries` tool implements a priority-first architecture:
@@ -154,67 +131,38 @@ The `webex_get_rooms_info` tool provides comprehensive insights:
 
 This tool is essential for understanding your WebEx monitoring scope and troubleshooting access issues.
 
-## 🚀 ORGANIZATION POLICY BYPASS SYSTEM
+## 🎯 Hybrid Room Monitoring System
 
-### **The Problem**
-Personal tokens provide full user access but may occasionally face restrictions or expiration issues.
+### **How It Works**
+The system uses a 5-tier intelligent filtering pipeline to monitor only your most relevant rooms:
 
-### **The Solution - Multiple Bypass Methods**
+1. **Priority Rooms** - Always monitored regardless of other filters
+2. **Pattern Matching** - Include/exclude rooms based on name patterns
+3. **Activity Filtering** - Filter by recent message activity and member count
+4. **Smart Scoring** - Score rooms by urgency, activity, and relevance
+5. **Performance Limits** - Apply room count limits with caching for optimal speed
 
-#### **Method 1: WebEx Integration (OAuth) - RECOMMENDED**
-```
-1. "Detect best WebEx access mode" - Auto-identifies if Integration can bypass restrictions
-2. "Setup WebEx Integration" - Configures OAuth flow with client_id/client_secret  
-3. "Complete OAuth authorization" - Finishes user authorization flow
-4. "Get WebEx messages hybrid" - Retrieves messages via OAuth (bypasses bot restrictions)
-```
+### **Benefits**
+- **95% API Reduction**: Monitor 25 instead of 100+ rooms
+- **Faster Response**: 5-second message checks vs 60+ seconds
+- **Better Relevance**: Focus on rooms that actually matter
+- **Automatic Discovery**: New alert rooms auto-included by patterns
 
-**Why This Works**: Integration uses USER permissions via OAuth, providing an alternative to personal tokens with longer expiration.
+## 🔧 Personal Token Setup & Troubleshooting
 
-#### **Method 2: WebEx Webhooks - Real-Time Alternative**
-```
-1. "Setup WebEx webhooks" - Configures real-time message notifications
-2. "Get WebEx messages hybrid" in WEBHOOK mode - Receives pushed notifications
-```
+### Getting Your Personal Token
+1. Visit [WebEx Developer Portal](https://developer.webex.com/docs/getting-started)
+2. Click "Get My Personal Access Token"
+3. Copy the token to your `.env` file
+4. **Note**: Tokens expire after 12 hours
 
-**Why This Works**: Instead of polling for messages, WebEx pushes notifications when events occur (real-time updates).
+### Common Issues
+- **Token Expired**: Generate new token (12-hour lifespan)
+- **Access Denied**: Verify you have room access in WebEx Teams app
+- **Invalid Token**: Check token was copied correctly
 
-#### **Method 3: Hybrid Multi-Mode System**
-```
-1. "Detect best WebEx access mode" - Tests all available methods
-2. "Get WebEx messages hybrid" - Automatically uses best working approach
-```
-
-**Auto-Detection Logic**:
-- If Integration works → Use OAuth (bypasses restrictions)  
-- If Webhooks work → Use real-time notifications
-- If Bot works → Use normal API
-- If nothing works → Provide admin contact guidance
-
-## 🔧 Personal Token Diagnostics & Troubleshooting
-The `webex_diagnose_personal_token` tool is **essential for troubleshooting access issues**:
-
-### Common Issues & Solutions:
-1. **Invalid Personal Token**
-   - **Root Cause**: Expired or malformed personal access token
-   - **Fix**: Generate new token from [WebEx Developer Portal](https://developer.webex.com/docs/getting-started)
-   - **Token Lifespan**: Personal tokens expire after 12 hours
-
-2. **Access Issues**
-   - **Root Cause**: Personal tokens inherit your user permissions
-   - **Fix**: Verify you have access to rooms in WebEx Teams app
-   - **Required**: Must be logged into WebEx account that generated the token
-
-3. **Organization Restrictions (Rare)**
-   - **Root Cause**: Some organizations may restrict personal token usage
-   - **Fix**: Contact WebEx administrator or try different account
-   - **Alternative**: Use Integration OAuth flow for bypass
-
-### When to Use:
-- Rooms showing access errors
-- Personal token not working as expected
-- Setting up personal token for the first time
-- Troubleshooting WebEx API access issues
+### Diagnostics
+Use **"Diagnose my WebEx personal token"** command to troubleshoot issues automatically.
 
 ## Default Behavior
 When user asks to "check messages" without specifying "urgent", use `webex_get_message_summaries` to show urgent messages first, then summaries of all other rooms.
